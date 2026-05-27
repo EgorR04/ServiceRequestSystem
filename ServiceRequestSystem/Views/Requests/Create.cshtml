@@ -1,0 +1,48 @@
+﻿@using Microsoft.AspNetCore.Http
+
+@model ServiceRequestSystem.Models.ServiceRequest
+
+@{
+    ViewData["Title"] = "Створення заявки";
+}
+
+<h2>Створення сервісної заявки</h2>
+
+<form asp-action="Create" method="post">
+    <div class="mb-3">
+        <label class="form-label">Тема заявки</label>
+        <input asp-for="Title" class="form-control" required />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Опис проблеми</label>
+        <textarea asp-for="Description" class="form-control" rows="4" required></textarea>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Об'єкт обслуговування</label>
+        <select asp-for="ServiceObjectId" asp-items="ViewBag.ServiceObjects" class="form-select" required>
+            <option value="">-- Оберіть об'єкт --</option>
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Пріоритет</label>
+        <select asp-for="RequestPriorityId" asp-items="ViewBag.Priorities" class="form-select" required>
+            <option value="">-- Оберіть пріоритет --</option>
+        </select>
+    </div>
+
+    @if (Context.Session.GetInt32("RoleId") != 1)
+    {
+        <div class="mb-3">
+            <label class="form-label">Виконавець</label>
+            <select asp-for="AssignedEngineerId" asp-items="ViewBag.Engineers" class="form-select">
+                <option value="">Не призначено</option>
+            </select>
+        </div>
+    }
+
+    <button type="submit" class="btn btn-success">Зберегти заявку</button>
+    <a asp-action="Index" class="btn btn-secondary">Назад до списку</a>
+</form>

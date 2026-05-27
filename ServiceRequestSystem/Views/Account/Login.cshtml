@@ -1,0 +1,44 @@
+﻿@model ServiceRequestSystem.Models.LoginViewModel
+
+@{
+    ViewData["Title"] = "Вхід до системи";
+}
+
+<h2>Вхід до системи</h2>
+
+@if (ViewBag.Error != null)
+{
+    <div class="alert alert-danger">
+        @ViewBag.Error
+    </div>
+}
+
+<form asp-action="Login" method="post" style="max-width: 500px;">
+    <div class="mb-3">
+        <label class="form-label">Email</label>
+        <input asp-for="Email" class="form-control" required />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Пароль</label>
+        <input asp-for="Password" type="password" class="form-control" required />
+    </div>
+
+    <button type="submit" class="btn btn-primary">
+        Увійти
+    </button>
+</form>
+
+<hr />
+
+<p class="text-muted">
+    Тестові облікові записи:
+</p>
+
+<ul>
+    <li>client@example.com / 12345 — клієнт</li>
+    <li>operator@example.com / 12345 — оператор</li>
+    <li>engineer@example.com / 12345 — інженер</li>
+    <li>admin@example.com / 12345 — адміністратор</li>
+    <li>manager@example.com / 12345 — керівник сервісної служби</li>
+</ul>

@@ -1,0 +1,121 @@
+﻿@using Microsoft.AspNetCore.Http
+
+@model IEnumerable<ServiceRequestSystem.Models.ServiceRequest>
+
+@{
+    ViewData["Title"] = "Сервісні заявки";
+}
+
+@{
+    var roleId = Context.Session.GetInt32("RoleId");
+    bool canDeleteRequest = roleId == 2 || roleId == 4 || roleId == 5;
+}
+
+<h2>Сервісні заявки</h2>
+
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["Message"]
+    </div>
+}
+
+<p>
+    <a asp-controller="Requests" asp-action="Create" class="btn btn-primary">
+        Створити нову заявку
+    </a>
+</p>
+
+<form asp-action="Index" method="get" class="card card-body mb-3">
+    <div class="row">
+        <div class="col-md-3 mb-2">
+            <label class="form-label">Пошук</label>
+            <input type="text" name="search" value="@ViewBag.Search" class="form-control"
+                   placeholder="Тема або опис заявки" />
+        </div>
+
+        <div class="col-md-3 mb-2">
+            <label class="form-label">Статус</label>
+            <select name="statusId" asp-items="ViewBag.Statuses" class="form-select">
+                <option value="">Усі статуси</option>
+            </select>
+        </div>
+
+        <div class="col-md-3 mb-2">
+            <label class="form-label">Пріоритет</label>
+            <select name="priorityId" asp-items="ViewBag.Priorities" class="form-select">
+                <option value="">Усі пріоритети</option>
+            </select>
+        </div>
+
+        <div class="col-md-3 mb-2">
+            <label class="form-label">Об'єкт</label>
+            <select name="objectId" asp-items="ViewBag.Objects" class="form-select">
+                <option value="">Усі об'єкти</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="mt-2">
+        <button type="submit" class="btn btn-primary">
+            Застосувати фільтр
+        </button>
+
+        <a asp-action="Index" class="btn btn-secondary">
+            Скинути
+        </a>
+    </div>
+</form>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>№</th>
+            <th>Тема</th>
+            <th>Об'єкт</th>
+            <th>Статус</th>
+            <th>Пріоритет</th>
+            <th>Автор</th>
+            <th>Виконавець</th>
+            <th>Дата створення</th>
+            <th>Дії</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (!Model.Any())
+        {
+            <tr>
+                <td colspan="9" class="text-center">
+                    Заявки відсутні
+                </td>
+            </tr>
+        }
+        else
+        {
+            foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.ServiceRequestId</td>
+                    <td>@item.Title</td>
+                    <td>@item.ServiceObject?.ObjectName</td>
+                    <td>@item.RequestStatus?.StatusName</td>
+                    <td>@item.RequestPriority?.PriorityName</td>
+                    <td>@item.CreatedByUser?.FullName</td>
+                    <td>
+                        @(item.AssignedEngineer != null
+                                        ? item.AssignedEngineer.FullName
+                                        : "Не призначено")
+            </td>
+            <td>@item.CreatedAt.ToString("dd.MM.yyyy HH:mm")</td>
+            <td>
+                <a asp-action="Details" asp-route-id="@item.ServiceRequestId" class="btn btn-info btn-sm">Деталі</a>
+                @if (canDeleteRequest)
+                        {
+                            <a asp-action="Delete" asp-route-id="@item.ServiceRequestId" class="btn btn-danger btn-sm">Видалити</a>
+                        }
+            </td>
+        </tr>
+                }
+        }
+    </tbody>
+</table>

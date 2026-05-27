@@ -1,0 +1,144 @@
+﻿@{
+    ViewData["Title"] = "Головна";
+    int roleId = ViewBag.RoleId;
+}
+
+<div class="mb-4">
+    <h2>Вебсистема реєстрації та супроводу сервісних заявок</h2>
+
+    <p class="text-muted">
+        Система призначена для обліку, обробки та супроводу сервісних заявок,
+        пов'язаних з обслуговуванням систем відеоспостереження офісних приміщень.
+    </p>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h4>Вітаємо, @ViewBag.FullName!</h4>
+        <p>
+            Ваша роль у системі:
+            <strong>@ViewBag.RoleName</strong>
+        </p>
+
+        @if (roleId == 1)
+        {
+            <p>
+                Ви можете створювати сервісні заявки, переглядати їхній статус
+                та відстежувати хід виконання.
+            </p>
+        }
+        else if (roleId == 2)
+        {
+            <p>
+                Ви можете переглядати всі заявки, класифікувати звернення,
+                змінювати статуси та призначати сервісних інженерів.
+            </p>
+        }
+        else if (roleId == 3)
+        {
+            <p>
+                Ви можете працювати із заявками, які призначені саме вам,
+                змінювати їхній статус та фіксувати результат виконання робіт.
+            </p>
+        }
+        else if (roleId == 4)
+        {
+            <p>
+                Ви маєте доступ до адміністрування системи, об'єктів обслуговування,
+                заявок та статистичної інформації.
+            </p>
+        }
+        else if (roleId == 5)
+        {
+            <p>
+                Ви можете контролювати процес виконання заявок, переглядати статистику
+                та аналізувати завантаженість сервісної служби.
+            </p>
+        }
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="card text-center">
+            <div class="card-header">Усього заявок</div>
+            <div class="card-body">
+                <h3>@ViewBag.TotalRequests</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 mb-3">
+        <div class="card text-center">
+            <div class="card-header">Нові</div>
+            <div class="card-body">
+                <h3>@ViewBag.NewRequests</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 mb-3">
+        <div class="card text-center">
+            <div class="card-header">У роботі</div>
+            <div class="card-body">
+                <h3>@ViewBag.InProgressRequests</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 mb-3">
+        <div class="card text-center">
+            <div class="card-header">Виконані</div>
+            <div class="card-body">
+                <h3>@ViewBag.DoneRequests</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header">
+        <strong>Швидкі дії</strong>
+    </div>
+
+    <div class="card-body">
+        <a asp-controller="Requests" asp-action="Index" class="btn btn-primary mb-2">
+            Перейти до заявок
+        </a>
+
+        @if (roleId == 1)
+        {
+            <a asp-controller="Requests" asp-action="Create" class="btn btn-success mb-2">
+                Створити нову заявку
+            </a>
+        }
+
+        @if (roleId == 2 || roleId == 4 || roleId == 5)
+        {
+            <a asp-controller="Objects" asp-action="Index" class="btn btn-secondary mb-2">
+                Об'єкти обслуговування
+            </a>
+
+            <a asp-controller="Statistics" asp-action="Index" class="btn btn-info mb-2">
+                Статистика
+            </a>
+        }
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <strong>Основні можливості системи</strong>
+    </div>
+
+    <div class="card-body">
+        <ul>
+            <li>реєстрація сервісних заявок щодо несправностей систем відеоспостереження;</li>
+            <li>призначення сервісних інженерів для виконання робіт;</li>
+            <li>зміна статусів заявок відповідно до етапів їх виконання;</li>
+            <li>фіксація коментарів, результатів виконання та історії змін;</li>
+            <li>перегляд об'єктів обслуговування та пов'язаних із ними заявок;</li>
+            <li>аналіз кількості заявок, статусів, пріоритетів і завантаженості інженерів.</li>
+        </ul>
+    </div>
+</div>

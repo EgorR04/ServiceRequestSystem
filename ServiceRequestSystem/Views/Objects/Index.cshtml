@@ -1,0 +1,147 @@
+﻿@using Microsoft.AspNetCore.Http
+
+@model IEnumerable<ServiceRequestSystem.Models.ServiceObject>
+
+@{
+    ViewData["Title"] = "Об'єкти обслуговування";
+}
+
+@{
+    bool isAdmin = Context.Session.GetInt32("RoleId") == 4;
+}
+
+<h2>Об'єкти обслуговування</h2>
+
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["Message"]
+    </div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["Error"]
+    </div>
+}
+
+<p>
+    @if (isAdmin)
+    {
+    <p>
+        <a asp-action="Create" class="btn btn-primary">Додати об'єкт</a>
+    </p>
+}
+</p>
+
+<form asp-action="Index" method="get" class="card card-body mb-3">
+    <div class="row">
+        <div class="col-md-6 mb-2">
+            <label class="form-label">Пошук</label>
+            <input type="text"
+                   name="search"
+                   value="@ViewBag.Search"
+                   class="form-control"
+                   placeholder="Назва, адреса, контактна особа, телефон або опис" />
+        </div>
+
+        <div class="col-md-4 mb-2">
+            <label class="form-label">Фільтр за заявками</label>
+            <select name="requestFilter" class="form-select">
+                @if (ViewBag.RequestFilter == null)
+                {
+                    <option value="" selected>Усі об'єкти</option>
+                }
+                else
+                {
+                    <option value="">Усі об'єкти</option>
+                }
+
+                @if (ViewBag.RequestFilter == 1)
+                {
+                    <option value="1" selected>Тільки з заявками</option>
+                }
+                else
+                {
+                    <option value="1">Тільки з заявками</option>
+                }
+
+                @if (ViewBag.RequestFilter == 2)
+                {
+                    <option value="2" selected>Тільки без заявок</option>
+                }
+                else
+                {
+                    <option value="2">Тільки без заявок</option>
+                }
+            </select>
+        </div>
+
+        <div class="col-md-2 mb-2 d-flex align-items-end">
+            <div>
+                <button type="submit" class="btn btn-primary mb-1">
+                    Знайти
+                </button>
+
+                <a asp-action="Index" class="btn btn-secondary mb-1">
+                    Скинути
+                </a>
+            </div>
+        </div>
+    </div>
+</form>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Назва об'єкта</th>
+            <th>Адреса</th>
+            <th>Контактна особа</th>
+            <th>Телефон</th>
+            <th>Кількість заявок</th>
+            <th>Дії</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (!Model.Any())
+        {
+            <tr>
+                <td colspan="6" class="text-center">Об'єкти відсутні</td>
+            </tr>
+        }
+        else
+        {
+            foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.ObjectName</td>
+                    <td>@item.Address</td>
+                    <td>@item.ContactPerson</td>
+                    <td>@item.ContactPhone</td>
+
+                    <td>
+                        @(item.ServiceRequests != null ? item.ServiceRequests.Count : 0)
+                    </td>
+
+                    <td>
+                        <a asp-action="Details"
+                           asp-route-id="@item.ServiceObjectId"
+                           class="btn btn-info btn-sm">
+                            Деталі
+                        </a>
+
+                        @if (isAdmin)
+                        {
+                            <a asp-action="Delete"
+                               asp-route-id="@item.ServiceObjectId"
+                               class="btn btn-danger btn-sm">
+                                Видалити
+                            </a>
+                        }
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>

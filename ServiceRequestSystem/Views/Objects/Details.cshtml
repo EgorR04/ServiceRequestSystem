@@ -1,0 +1,73 @@
+﻿@model ServiceRequestSystem.Models.ServiceObject
+
+@{
+    ViewData["Title"] = "Деталі об'єкта";
+}
+
+<h2>Деталі об'єкта обслуговування</h2>
+
+<div class="card mb-3">
+    <div class="card-header">
+        <strong>@Model.ObjectName</strong>
+    </div>
+
+    <div class="card-body">
+        <p><strong>Адреса:</strong> @Model.Address</p>
+        <p><strong>Контактна особа:</strong> @Model.ContactPerson</p>
+        <p><strong>Телефон:</strong> @Model.ContactPhone</p>
+
+        <p>
+            <strong>Опис:</strong><br />
+            @Model.Description
+        </p>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-header">
+        <strong>Заявки, пов'язані з об'єктом</strong>
+    </div>
+
+    <div class="card-body">
+        @if (Model.ServiceRequests == null || !Model.ServiceRequests.Any())
+        {
+            <p>Заявки для цього об'єкта відсутні.</p>
+        }
+        else
+        {
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>№</th>
+                        <th>Тема</th>
+                        <th>Статус</th>
+                        <th>Пріоритет</th>
+                        <th>Дата створення</th>
+                        <th>Дії</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var request in Model.ServiceRequests.OrderByDescending(r => r.CreatedAt))
+                    {
+                        <tr>
+                            <td>@request.ServiceRequestId</td>
+                            <td>@request.Title</td>
+                            <td>@request.RequestStatus?.StatusName</td>
+                            <td>@request.RequestPriority?.PriorityName</td>
+                            <td>@request.CreatedAt.ToString("dd.MM.yyyy HH:mm")</td>
+                            <td>
+                                <a asp-controller="Requests" asp-action="Details" asp-route-id="@request.ServiceRequestId" class="btn btn-info btn-sm">
+                                    Деталі заявки
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+</div>
+
+<a asp-action="Index" class="btn btn-secondary">
+    Назад до списку
+</a>

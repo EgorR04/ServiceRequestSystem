@@ -1,0 +1,42 @@
+﻿@model ServiceRequestSystem.Models.ServiceRequest
+
+@{
+    ViewData["Title"] = "Видалення заявки";
+}
+
+<h2>Видалення сервісної заявки</h2>
+
+<div class="alert alert-warning">
+    Ви дійсно бажаєте видалити цю заявку? Цю дію неможливо скасувати.
+</div>
+
+<div class="card mb-3">
+    <div class="card-header">
+        <strong>Заявка №@Model.ServiceRequestId</strong>
+    </div>
+
+    <div class="card-body">
+        <p><strong>Тема:</strong> @Model.Title</p>
+        <p><strong>Об'єкт:</strong> @Model.ServiceObject?.ObjectName</p>
+        <p><strong>Статус:</strong> @Model.RequestStatus?.StatusName</p>
+        <p><strong>Пріоритет:</strong> @Model.RequestPriority?.PriorityName</p>
+        <p><strong>Автор:</strong> @Model.CreatedByUser?.FullName</p>
+        <p>
+            <strong>Виконавець:</strong>
+            @(Model.AssignedEngineer != null ? Model.AssignedEngineer.FullName : "Не призначено")
+        </p>
+        <p><strong>Дата створення:</strong> @Model.CreatedAt.ToString("dd.MM.yyyy HH:mm")</p>
+    </div>
+</div>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="ServiceRequestId" />
+
+    <button type="submit" class="btn btn-danger">
+        Видалити
+    </button>
+
+    <a asp-action="Index" class="btn btn-secondary">
+        Скасувати
+    </a>
+</form>

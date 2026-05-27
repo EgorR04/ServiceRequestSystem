@@ -1,0 +1,62 @@
+﻿@model ServiceRequestSystem.Models.ServiceObject
+
+@{
+    ViewData["Title"] = "Видалення об'єкта";
+}
+
+<h2>Видалення об'єкта обслуговування</h2>
+
+@if (Model.ServiceRequests != null && Model.ServiceRequests.Any())
+{
+    <div class="alert alert-danger">
+        Цей об'єкт не можна видалити, оскільки з ним пов'язані сервісні заявки.
+    </div>
+}
+else
+{
+    <div class="alert alert-warning">
+        Ви дійсно бажаєте видалити цей об'єкт? Цю дію неможливо скасувати.
+    </div>
+}
+
+<div class="card mb-3">
+    <div class="card-header">
+        <strong>@Model.ObjectName</strong>
+    </div>
+
+    <div class="card-body">
+        <p><strong>Адреса:</strong> @Model.Address</p>
+        <p><strong>Контактна особа:</strong> @Model.ContactPerson</p>
+        <p><strong>Телефон:</strong> @Model.ContactPhone</p>
+        <p>
+            <strong>Опис:</strong><br />
+            @Model.Description
+        </p>
+
+        <p>
+            <strong>Кількість пов'язаних заявок:</strong>
+            @(Model.ServiceRequests != null ? Model.ServiceRequests.Count : 0)
+        </p>
+    </div>
+</div>
+
+@if (Model.ServiceRequests == null || !Model.ServiceRequests.Any())
+{
+    <form asp-action="Delete" method="post">
+        <input type="hidden" asp-for="ServiceObjectId" />
+
+        <button type="submit" class="btn btn-danger">
+            Видалити
+        </button>
+
+        <a asp-action="Index" class="btn btn-secondary">
+            Скасувати
+        </a>
+    </form>
+}
+else
+{
+    <a asp-action="Index" class="btn btn-secondary">
+        Назад до списку
+    </a>
+}

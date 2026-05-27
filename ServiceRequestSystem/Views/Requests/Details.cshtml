@@ -1,0 +1,251 @@
+﻿@using Microsoft.AspNetCore.Http
+
+@model ServiceRequestSystem.Models.ServiceRequest
+
+@{
+    ViewData["Title"] = "Деталі заявки";
+}
+
+@{
+    var roleId = Context.Session.GetInt32("RoleId");
+    var userId = Context.Session.GetInt32("UserId");
+
+    bool canChangeStatus = roleId == 2 ||
+        (roleId == 3 && Model.AssignedEngineerId == userId);
+
+    bool canAddResult = roleId == 3 && Model.AssignedEngineerId == userId;
+}
+
+<h2>Деталі сервісної заявки</h2>
+
+<div class="card mb-3">
+    <div class="card-header">
+        <strong>Заявка №@Model.ServiceRequestId</strong>
+    </div>
+
+    <div class="card-body">
+        <h4>@Model.Title</h4>
+
+        <p>
+            <strong>Опис проблеми:</strong><br />
+            @Model.Description
+        </p>
+
+        <p>
+            <strong>Об'єкт обслуговування:</strong>
+            @Model.ServiceObject?.ObjectName
+        </p>
+
+        <p>
+            <strong>Адреса об'єкта:</strong>
+            @Model.ServiceObject?.Address
+        </p>
+
+        <p>
+            <strong>Автор заявки:</strong>
+            @Model.CreatedByUser?.FullName
+        </p>
+
+        <p>
+            <strong>Виконавець:</strong>
+            @(Model.AssignedEngineer != null ? Model.AssignedEngineer.FullName : "Не призначено")
+        </p>
+
+        <p>
+            <strong>Статус:</strong>
+            @Model.RequestStatus?.StatusName
+        </p>
+
+        <p>
+            <strong>Пріоритет:</strong>
+            @Model.RequestPriority?.PriorityName
+        </p>
+
+        <p>
+            <strong>Дата створення:</strong>
+            @Model.CreatedAt.ToString("dd.MM.yyyy HH:mm")
+        </p>
+
+        @if (Model.UpdatedAt != null)
+        {
+            <p>
+                <strong>Дата оновлення:</strong>
+                @Model.UpdatedAt?.ToString("dd.MM.yyyy HH:mm")
+            </p>
+        }
+
+        @if (!string.IsNullOrWhiteSpace(Model.Result))
+        {
+            <p>
+                <strong>Результат виконання:</strong><br />
+                @Model.Result
+            </p>
+        }
+    </div>
+</div>
+
+@if (Context.Session.GetInt32("RoleId") == 2 ||
+     Context.Session.GetInt32("RoleId") == 4 ||
+     Context.Session.GetInt32("RoleId") == 5)
+{
+    <div class="card mb-3">
+        <div class="card-header">
+            <strong>Призначення виконавця</strong>
+        </div>
+
+        <div class="card-body">
+            <form asp-action="AssignEngineer" method="post">
+                <input type="hidden" name="id" value="@Model.ServiceRequestId" />
+
+                <div class="mb-3">
+                    <label class="form-label">Сервісний інженер</label>
+                    <select name="assignedEngineerId" asp-items="ViewBag.Engineers" class="form-select" required>
+                        <option value="">-- Оберіть інженера --</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    Призначити виконавця
+                </button>
+            </form>
+        </div>
+    </div>
+}
+
+@if (canChangeStatus)
+{
+    <div class="card mb-3">
+        <div class="card-header">
+            <strong>Зміна статусу заявки</strong>
+        </div>
+
+        <div class="card-body">
+            <form asp-action="ChangeStatus" method="post">
+                <input type="hidden" name="id" value="@Model.ServiceRequestId" />
+
+                <div class="mb-3">
+                    <label class="form-label">Новий статус</label>
+                    <select name="requestStatusId" asp-items="ViewBag.Statuses" class="form-select" required></select>
+                </div>
+
+                <button type="submit" class="btn btn-warning">
+                    Змінити статус
+                </button>
+            </form>
+        </div>
+    </div>
+}
+
+<div class="card mb-3">
+    <div class="card-header">
+        <strong>Додати коментар</strong>
+    </div>
+
+    <div class="card-body">
+        <form asp-action="AddComment" method="post">
+            <input type="hidden" name="id" value="@Model.ServiceRequestId" />
+
+            <div class="mb-3">
+                <label class="form-label">Текст коментаря</label>
+                <textarea name="commentText" class="form-control" rows="3" required></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+                Додати коментар
+            </button>
+        </form>
+    </div>
+</div>
+
+@if (canAddResult)
+{
+    <div class="card mb-3">
+        <div class="card-header">
+            <strong>Фіксація результату виконання</strong>
+        </div>
+
+        <div class="card-body">
+            <form asp-action="AddResult" method="post">
+                <input type="hidden" name="id" value="@Model.ServiceRequestId" />
+
+                <div class="mb-3">
+                    <label class="form-label">Опис виконаних робіт</label>
+                    <textarea name="resultText" class="form-control" rows="4" required></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-success">
+                    Зафіксувати результат
+                </button>
+            </form>
+        </div>
+    </div>
+}
+
+<div class="card mb-3">
+    <div class="card-header">
+        <strong>Коментарі до заявки</strong>
+    </div>
+
+    <div class="card-body">
+        @if (Model.Comments == null || !Model.Comments.Any())
+        {
+            <p>Коментарі відсутні.</p>
+        }
+        else
+        {
+            foreach (var comment in Model.Comments.OrderByDescending(c => c.CreatedAt))
+            {
+                <div class="border rounded p-2 mb-2">
+                    <strong>@comment.User?.FullName</strong>
+                    <span class="text-muted">
+                        @comment.CreatedAt.ToString("dd.MM.yyyy HH:mm")
+                    </span>
+                    <p class="mb-0">@comment.CommentText</p>
+                </div>
+            }
+        }
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-header">
+        <strong>Історія змін</strong>
+    </div>
+
+    <div class="card-body">
+        @if (Model.History == null || !Model.History.Any())
+        {
+            <p>Історія змін відсутня.</p>
+        }
+        else
+        {
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>Дата</th>
+                        <th>Користувач</th>
+                        <th>Дія</th>
+                        <th>Було</th>
+                        <th>Стало</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.History.OrderByDescending(h => h.CreatedAt))
+                    {
+                        <tr>
+                            <td>@item.CreatedAt.ToString("dd.MM.yyyy HH:mm")</td>
+                            <td>@item.User?.FullName</td>
+                            <td>@item.ActionType</td>
+                            <td>@item.OldValue</td>
+                            <td>@item.NewValue</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+</div>
+
+<a asp-action="Index" class="btn btn-secondary">
+    Назад до списку
+</a>

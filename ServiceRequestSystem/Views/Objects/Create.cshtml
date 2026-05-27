@@ -1,0 +1,37 @@
+﻿@model ServiceRequestSystem.Models.ServiceObject
+
+@{
+    ViewData["Title"] = "Додавання об'єкта";
+}
+
+<h2>Додавання об'єкта обслуговування</h2>
+
+<form asp-action="Create" method="post">
+    <div class="mb-3">
+        <label class="form-label">Назва об'єкта</label>
+        <input asp-for="ObjectName" class="form-control" required />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Адреса</label>
+        <input asp-for="Address" class="form-control" required />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Контактна особа</label>
+        <input asp-for="ContactPerson" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Контактний телефон</label>
+        <input asp-for="ContactPhone" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Опис системи відеоспостереження</label>
+        <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-success">Зберегти</button>
+    <a asp-action="Index" class="btn btn-secondary">Назад до списку</a>
+</form>

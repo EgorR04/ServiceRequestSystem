@@ -1,0 +1,128 @@
+﻿@{
+    ViewData["Title"] = "Статистика заявок";
+}
+
+<h2>Статистика сервісних заявок</h2>
+
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-header">Усього заявок</div>
+            <div class="card-body">
+                <h3>@ViewBag.TotalRequests</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-header">Нові</div>
+            <div class="card-body">
+                <h3>@ViewBag.NewRequests</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-header">У роботі</div>
+            <div class="card-body">
+                <h3>@ViewBag.InProgressRequests</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-header">Виконані</div>
+            <div class="card-body">
+                <h3>@ViewBag.DoneRequests</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-header">
+        <strong>Розподіл заявок за статусами</strong>
+    </div>
+
+    <div class="card-body">
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Статус</th>
+                    <th>Кількість заявок</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in ViewBag.ByStatus)
+                {
+                    <tr>
+                        <td>@item.Name</td>
+                        <td>@item.Count</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-header">
+        <strong>Розподіл заявок за пріоритетами</strong>
+    </div>
+
+    <div class="card-body">
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Пріоритет</th>
+                    <th>Кількість заявок</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in ViewBag.ByPriority)
+                {
+                    <tr>
+                        <td>@item.Name</td>
+                        <td>@item.Count</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-header">
+        <strong>Завантаженість сервісних інженерів</strong>
+    </div>
+
+    <div class="card-body">
+        @if (ViewBag.ByEngineer == null || ViewBag.ByEngineer.Count == 0)
+        {
+            <p>Призначені заявки відсутні.</p>
+        }
+        else
+        {
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>Інженер</th>
+                        <th>Кількість призначених заявок</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in ViewBag.ByEngineer)
+                    {
+                        <tr>
+                            <td>@item.Name</td>
+                            <td>@item.Count</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+</div>
